@@ -16,14 +16,18 @@ Future features:
 - QR scanning
 - Raffle
 - Speaker notes
-- 
 
 
--- Raffle
+TODOs:
+- Make the registration page pretty (resources/views/livewire/event-registration.blade.php)
+- Send Confirmation email to participants after registration
+- On registration page, add a "un-join button"
 
-
-BetterWorld - $500 (base) 
-Uplift Code Camp - 
+Misc todo:
+- add linting (pint)
+- add static analysis (larastan)
+- optionally add rector (not a big deal though)
+ 
 
 
 

@@ -13,17 +13,24 @@
 
 
             <div class="overflow-hidden rounded-lg bg-white shadow mt-5">
-                <div class="px-4 py-5 sm:p-6">
-                    <form wire:submit="create" >
-                        {{ $this->form }}
+                @if(!is_null($authUser->participant_id))
+                    <button wire:click="join" type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Join
+                    </button>
+                @else
+                    <div class="px-4 py-5 sm:p-6">
+                        <form wire:submit="register" >
+                            {{ $this->form }}
 
-                        <br />
+                            <br />
 
-                        <button type="submit" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Submit
-                        </button>
-                    </form>
-                </div>
+                            <button type="submit" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>

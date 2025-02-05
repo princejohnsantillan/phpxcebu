@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Event;
 use App\Models\EventParticipant;
 use App\Models\Participant;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -26,9 +27,14 @@ class EventRegistration extends Component implements  HasForms, HasActions
 
     public Event $event;
 
+    public ?User $authUser;
+
 
     public function mount(): void
     {
+
+        $this->authUser = auth()->user();
+
         $this->form->fill();
     }
 
@@ -46,7 +52,22 @@ class EventRegistration extends Component implements  HasForms, HasActions
     }
 
 
-    public function create(): void
+    public function join(): void
+    {
+        EventParticipant::query()->create([
+            'participant_id' => $this->authUser->participant_id,
+            'event_id' => $this->event->id
+        ]);
+
+        Notification::make()
+            ->title('Joined successfully')
+            ->success()
+            ->send();
+    }
+
+    // TODO: add a un-join feature
+
+    public function register(): void
     {
         //save participant for event
         $participant = Participant::create($this->form->getState());
@@ -57,11 +78,17 @@ class EventRegistration extends Component implements  HasForms, HasActions
         ]);
 
 
+        if(!is_null($this->authUser)){
+            $this->authUser->update([
+                'participant_id' => $participant->id,
+            ]);
+        }
+
         $this->data = [];
 
 
         Notification::make()
-            ->title('Saved successfully')
+            ->title('Registered successfully')
             ->success()
             ->send();
     }

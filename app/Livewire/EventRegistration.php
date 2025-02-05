@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Livewire\Component;
 
 class EventRegistration extends Component implements  HasForms, HasActions
@@ -56,7 +57,13 @@ class EventRegistration extends Component implements  HasForms, HasActions
         ]);
 
 
-        dd($this->form->getState());
+        $this->data = [];
+
+
+        Notification::make()
+            ->title('Saved successfully')
+            ->success()
+            ->send();
     }
 
 

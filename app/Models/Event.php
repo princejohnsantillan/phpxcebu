@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -22,8 +23,8 @@ class Event extends Model
     }
 
 
-    public function participants(): HasManyThrough
+    public function participants(): BelongsToMany
     {
-        return $this->hasManyThrough(Participant::class,EventParticipant::class);
+        return $this->belongsToMany(Participant::class)->using(EventParticipant::class);
     }
 }

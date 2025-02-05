@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ParticipantResource\Pages;
-use App\Filament\Resources\ParticipantResource\RelationManagers;
+
 use App\Models\Participant;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -31,7 +31,11 @@ class ParticipantResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('phone'),
+                Tables\Columns\TextColumn::make('company'),
+                Tables\Columns\TextColumn::make('position'),
             ])
             ->filters([
                 //
@@ -49,7 +53,7 @@ class ParticipantResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 

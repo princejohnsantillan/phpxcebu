@@ -2,39 +2,40 @@
 
 namespace App\Livewire;
 
-use App\Models\Event;
-use App\Models\EventParticipant;
-use App\Models\Participant;
+use Carbon\Carbon;
 use App\Models\User;
-use Filament\Actions\Action;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
-use Filament\Notifications\Notification;
+use App\Models\Event;
 use Livewire\Component;
+use Filament\Forms\Form;
+use App\Models\Participant;
+use App\Models\EventParticipant;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Actions\Concerns\InteractsWithActions;
 
-class EventRegistration extends Component implements  HasForms, HasActions
+class EventRegistration extends Component implements HasForms, HasActions
 {
-
     use InteractsWithForms;
     use InteractsWithActions;
 
     public ?array $data = [];
 
     public Event $event;
+    public array $eventDate = [];
 
     public ?User $authUser;
-
 
     public function mount(): void
     {
 
         $this->authUser = auth()->user();
-
+        $this->eventDate = [
+            'day' => Carbon::parse($this->event->starts_at)->format('l, jS \\of F Y'),
+            'time' => Carbon::parse($this->event->starts_at)->format('h:i A') . ' - ' . Carbon::parse($this->event->ends_at)->format('h:i A'),
+        ];
         $this->form->fill();
     }
 
@@ -51,12 +52,11 @@ class EventRegistration extends Component implements  HasForms, HasActions
             ->statePath('data');
     }
 
-
     public function join(): void
     {
         EventParticipant::query()->create([
             'participant_id' => $this->authUser->participant_id,
-            'event_id' => $this->event->id
+            'event_id' => $this->event->id,
         ]);
 
         Notification::make()
@@ -74,11 +74,11 @@ class EventRegistration extends Component implements  HasForms, HasActions
 
         EventParticipant::query()->create([
             'participant_id' => $participant->id,
-            'event_id' => $this->event->id
+            'event_id' => $this->event->id,
         ]);
 
 
-        if(!is_null($this->authUser)){
+        if (! is_null($this->authUser)) {
             $this->authUser->update([
                 'participant_id' => $participant->id,
             ]);
@@ -92,7 +92,6 @@ class EventRegistration extends Component implements  HasForms, HasActions
             ->success()
             ->send();
     }
-
 
     public function render()
     {

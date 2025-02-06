@@ -30,8 +30,8 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function mount(): void
     {
-
         $this->authUser = auth()->user();
+
         $this->eventDate = [
             'day' => Carbon::parse($this->event->starts_at)->format('l, jS \\of F Y'),
             'time' => Carbon::parse($this->event->starts_at)->format('h:i A') . ' - ' . Carbon::parse($this->event->ends_at)->format('h:i A'),
@@ -72,20 +72,13 @@ class EventRegistration extends Component implements HasForms, HasActions
         //save participant for event
         $participant = Participant::create($this->form->getState());
 
-        EventParticipant::query()->create([
+        $this->event->participants()->attach([$participant->id]);
+
+        $this->authUser?->update([
             'participant_id' => $participant->id,
-            'event_id' => $this->event->id,
         ]);
 
-
-        if (! is_null($this->authUser)) {
-            $this->authUser->update([
-                'participant_id' => $participant->id,
-            ]);
-        }
-
         $this->data = [];
-
 
         Notification::make()
             ->title('Registered successfully')

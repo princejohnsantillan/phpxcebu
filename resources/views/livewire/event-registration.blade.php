@@ -20,10 +20,10 @@
                     </p>
                     <div class="flex flex-col items-center justify-center gap-x-6">
                         <p class="text-sm sm:text-base font-semibold">
-                            {{$eventDate['day']}}
+                            {{$event->date['day']}}
                         </p>
                         <p class="text-sm sm:text-base font-semibold">
-                            {{$eventDate['time']}}
+                            {{$event->date['time']}}
                         </p>
                     </div>
                 </section>
@@ -35,18 +35,26 @@
                 </div>
 
                 @if(!is_null(auth()->user()?->participant_id))
-                    <button wire:click="join" type="button" class="w-full sm:w-auto rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        Join
-                    </button>
+                    <div class="w-full flex justify-center gap-x-4">
+                        @if($participating)
+                            <x-filament::button type="button" color="gray" wire:click="withdraw">
+                                Withdraw
+                            </x-filament::button>
+                        @else
+                            <x-filament::button type="button" color="gray" wire:click="join">
+                                Join
+                            </x-filament::button>
+                        @endif
+                    </div>
                 @else
                     <div class="dark:text-gray-50 px-4 py-5 sm:p-6">
                         <form wire:submit="register" class="flex flex-col gap-y-8">
                             {{ $this->form }}
 
                             <div class="flex justify-center sm:justify-start">
-                                <button type="submit" class="w-full sm:w-auto rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-gray-600 dark:bg-gray-700">
-                                    Submit
-                                </button>
+                                <x-filament::button form="register" type="submit" color="gray">
+                                    Register
+                                </x-filament::button>
                             </div>
                         </form>
                     </div>

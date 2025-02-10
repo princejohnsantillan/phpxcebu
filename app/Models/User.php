@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -23,7 +24,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
-        'participant_id'
+        'participant_id',
     ];
 
     /**
@@ -53,5 +54,10 @@ class User extends Authenticatable implements FilamentUser
     {
 
         return str_ends_with($this->email, '@app.phpxcebu.com') && $this->hasVerifiedEmail();
+    }
+
+    public function participant(): BelongsTo
+    {
+        return $this->belongsTo(Participant::class);
     }
 }

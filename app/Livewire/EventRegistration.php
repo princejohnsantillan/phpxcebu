@@ -65,10 +65,7 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function withdraw(): void
     {
-        EventParticipant::query()->where([
-            'participant_id' => auth()->user()->participant_id,
-            'event_id' => $this->event->id,
-        ])->delete();
+        $this->event->participants()->detach([auth()->user()->participant_id]);
 
         Notification::make()
             ->title('Withdrawn successfully')

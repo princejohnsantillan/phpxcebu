@@ -37,6 +37,12 @@ return [
 
     'mailers' => [
 
+        'mailcoach' => [
+            'transport' => 'mailcoach',
+            'domain' => env('MAILCOACH_DOMAIN','phpxcebu.mailcoach.app'),
+            'token' => env('MAILCOACHE_TOKEN'),
+        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),

@@ -2,13 +2,11 @@
 
 namespace App\Livewire;
 
-use Carbon\Carbon;
-use App\Models\User;
 use App\Models\Event;
 use Livewire\Component;
 use Filament\Forms\Form;
 use App\Models\Participant;
-use App\Models\EventParticipant;
+use App\Notifications\EventRegistered;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -22,16 +20,12 @@ class EventRegistration extends Component implements HasForms, HasActions
     use InteractsWithActions;
 
     public ?array $data = [];
-
     public Event $event;
-    public array $eventDate = [];
+    public bool $participating = false;
 
     public function mount(): void
     {
-        $this->eventDate = [
-            'day' => Carbon::parse($this->event->starts_at)->format('l, jS \\of F Y'),
-            'time' => Carbon::parse($this->event->starts_at)->format('h:i A') . ' - ' . Carbon::parse($this->event->ends_at)->format('h:i A'),
-        ];
+        $this->participating = auth()->user()?->participant?->isJoining($this->event) ?? false;
         $this->form->fill();
     }
 
@@ -50,10 +44,11 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function join(): void
     {
-        EventParticipant::query()->create([
-            'participant_id' => auth()->user()->participant_id,
-            'event_id' => $this->event->id,
-        ]);
+        $this->event->participants()->attach([auth()->user()->participant_id]);
+
+        auth()->user()->participant->notify(new EventRegistered($this->event));
+
+        $this->participating = true;
 
         Notification::make()
             ->title('Joined successfully')
@@ -61,11 +56,20 @@ class EventRegistration extends Component implements HasForms, HasActions
             ->send();
     }
 
-    // TODO: add a un-join feature
+    public function withdraw(): void
+    {
+        $this->event->participants()->detach([auth()->user()->participant_id]);
+
+        $this->participating = false;
+
+        Notification::make()
+            ->title('Withdrawn successfully')
+            ->success()
+            ->send();
+    }
 
     public function register(): void
     {
-        //save participant for event
         $participant = Participant::create($this->form->getState());
 
         $this->event->participants()->attach([$participant->id]);
@@ -73,6 +77,10 @@ class EventRegistration extends Component implements HasForms, HasActions
         auth()->user()?->update([
             'participant_id' => $participant->id,
         ]);
+
+        $participant->notify(new EventRegistered($this->event));
+
+        $this->participating = true;
 
         $this->data = [];
 
@@ -84,7 +92,6 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function render()
     {
-
         return view('livewire.event-registration');
     }
 }

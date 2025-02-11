@@ -45,10 +45,7 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function join(): void
     {
-        EventParticipant::query()->create([
-            'participant_id' => auth()->user()->participant_id,
-            'event_id' => $this->event->id,
-        ]);
+        $this->event->participants()->attach([auth()->user()->participant_id]);
 
         auth()->user()->participant->notify(new EventRegistered($this->event));
 

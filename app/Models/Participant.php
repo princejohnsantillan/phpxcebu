@@ -19,4 +19,9 @@ class Participant extends Model
     {
         return $this->belongsToMany(Event::class)->using(EventParticipant::class);
     }
+
+    public function isJoining(Event $event): bool
+    {
+        return $this->events()->where('events.id', $event->id)->exists();
+    }
 }

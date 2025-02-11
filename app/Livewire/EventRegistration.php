@@ -26,10 +26,7 @@ class EventRegistration extends Component implements HasForms, HasActions
 
     public function mount(): void
     {
-        $this->participating = EventParticipant::query()
-            ->where('participant_id', auth()->user()?->participant_id)
-            ->where('event_id', $this->event->id)
-            ->exists();
+        $this->participating = auth()->user()?->participant?->isJoining($this->event) ?? false;
         $this->form->fill();
     }
 
@@ -55,29 +52,28 @@ class EventRegistration extends Component implements HasForms, HasActions
 
         auth()->user()->participant->notify(new EventRegistered($this->event));
 
+        $this->participating = true;
+
         Notification::make()
             ->title('Joined successfully')
             ->success()
             ->send();
-
-        $this->participating = true;
     }
 
     public function withdraw(): void
     {
         $this->event->participants()->detach([auth()->user()->participant_id]);
 
+        $this->participating = false;
+
         Notification::make()
             ->title('Withdrawn successfully')
             ->success()
             ->send();
-
-        $this->participating = false;
     }
 
     public function register(): void
     {
-        //save participant for event
         $participant = Participant::create($this->form->getState());
 
         $this->event->participants()->attach([$participant->id]);
@@ -85,6 +81,8 @@ class EventRegistration extends Component implements HasForms, HasActions
         auth()->user()?->update([
             'participant_id' => $participant->id,
         ]);
+
+        $this->participating = true;
 
         $this->data = [];
 

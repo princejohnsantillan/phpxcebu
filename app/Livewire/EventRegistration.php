@@ -6,7 +6,6 @@ use App\Models\Event;
 use Livewire\Component;
 use Filament\Forms\Form;
 use App\Models\Participant;
-use App\Models\EventParticipant;
 use App\Notifications\EventRegistered;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
@@ -79,11 +78,11 @@ class EventRegistration extends Component implements HasForms, HasActions
             'participant_id' => $participant->id,
         ]);
 
+        $participant->notify(new EventRegistered($this->event));
+
         $this->participating = true;
 
         $this->data = [];
-
-        $participant->notify(new EventRegistered($this->event));
 
         Notification::make()
             ->title('Registered successfully')
